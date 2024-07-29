@@ -1,1 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step Progress Bar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffffcc;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+        }
+        .progress {
+            background-color: #ccc;
+            height: 5px;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        .progress-bar {
+            background-color: #4caf50;
+            height: 5px;
+            width: 0%;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            z-index: 2;
+            transition: width 0.4s ease;
+        }
+        .step {
+            background-color: #fff;
+            border: 3px solid #ccc;
+            border-radius: 50%;
+            padding: 10px;
+            z-index: 3;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .step.active {
+            border-color: #4caf50;
+            background-color: #4caf50;
+        }
+        .step.active::after {
+            content: "\2713";
+            color: white;
+        }
+        .step:not(.active)::after {
+            content: "\2717";
+            color: #ccc;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .btn.prev {
+            background-color: #bdbdbd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="progress-container">
+            <div class="progress"></div>
+            <div class="progress-bar" id="progress"></div>
+            <div class="step active">Start</div>
+            <div class="step">2</div>
+            <div class="step">3</div>
+            <div class="step">4</div>
+            <div class="step">5</div>
+        </div>
+        <div class="buttons">
+            <button class="btn prev" id="prev" disabled>&larr;</button>
+            <button class="btn" id="next">&rarr;</button>
+        </div>
+    </div>
 
+    <script>
+        const progress = document.getElementById('progress');
+        const prevBtn = document.getElementById('prev');
+        const nextBtn = document.getElementById('next');
+        const steps = document.querySelectorAll('.step');
+
+        let currentStep = 1;
+
+        nextBtn.addEventListener('click', () => {
+            currentStep++;
+            if (currentStep > steps.length) {
+                currentStep = steps.length;
+            }
+            update();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentStep--;
+            if (currentStep < 1) {
+                currentStep = 1;
+            }
+            update();
+        });
+
+        function update() {
+            steps.forEach((step, idx) => {
+                if (idx < currentStep) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+
+            const activeSteps = document.querySelectorAll('.step.active');
+            progress.style.width = ((activeSteps.length - 1) / (steps.length - 1)) * 100 + '%';
+
+            prevBtn.disabled = currentStep === 1;
+            nextBtn.disabled = currentStep === steps.length;
+        }
+    </script>
+</body>
+</html>
